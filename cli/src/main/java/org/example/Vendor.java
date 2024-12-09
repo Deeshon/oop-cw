@@ -10,7 +10,7 @@ public class Vendor implements Runnable {
     private boolean running = true;
 
     public Vendor(String vendorName, TicketPool ticketPool, int releaseRate, int totalTickets) {
-        this.vendorId = vendorName + Utils.generateId();
+        this.vendorId = "VEN-" + Utils.generateId();
         this.ticketPool = ticketPool;
         this.releaseRate = releaseRate;
         this.totalTickets = totalTickets;

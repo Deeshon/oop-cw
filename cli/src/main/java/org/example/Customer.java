@@ -9,10 +9,10 @@ public class Customer implements Runnable {
     private final int retrievalRate;
     private boolean running = true;
 
-    public Customer(TicketPool ticketPool, String name, String customerId, int retrievalRate) {
+    public Customer(TicketPool ticketPool, String name, int retrievalRate) {
+        this.customerId = "CUST-"+ Utils.generateId();
         this.ticketPool = ticketPool;
         this.name = name;
-        this.customerId = customerId;
         this.retrievalRate = retrievalRate;
     }
 
