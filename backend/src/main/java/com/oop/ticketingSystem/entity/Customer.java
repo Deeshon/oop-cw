@@ -2,13 +2,15 @@ package com.oop.ticketingSystem.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+import java.util.UUID;
+
 @Entity
 @Table(name = "customers")
 public class Customer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     private String name;
 
     public Customer() {}
@@ -17,13 +19,20 @@ public class Customer {
         this.name = name;
     }
 
+    @PrePersist
+    public void generateId() {
+        if (this.id == null) {
+            this.id = "CUST-" + UUID.randomUUID().toString().substring(0, 8);
+        }
+    }
+
     @Override
     public String toString() {
         return String.format("Customer[id=%d, name=%s]",
                 id, name);
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
