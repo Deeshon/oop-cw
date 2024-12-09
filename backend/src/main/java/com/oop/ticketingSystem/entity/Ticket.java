@@ -5,6 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class Ticket {
 
@@ -12,6 +14,7 @@ public class Ticket {
     private String id;
     private String producedBy;
     private String purchasedBy;
+    private LocalDateTime timeStamp;
 
     public Ticket() {}
 
@@ -19,6 +22,7 @@ public class Ticket {
         this.id = id;
         this.producedBy = producedBy;
         this.purchasedBy = purchasedBy;
+        this.timeStamp = LocalDateTime.now();
     }
 
     public String getId() {
