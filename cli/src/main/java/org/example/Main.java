@@ -1,8 +1,7 @@
 package org.example;
 
-import org.example.utils.Utils;
+import org.example.utils.InputValidator;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -24,7 +23,7 @@ public class Main {
             System.out.println("2. Create new configuration");
             System.out.print("Enter your choice: ");
 
-            int choice = scanner.nextInt();
+            int choice = InputValidator.isWithinRange(scanner, List.of(1,2), "Choice");
             scanner.nextLine();
             switch (choice) {
                 case 1:
@@ -48,11 +47,12 @@ public class Main {
         Simulation simulation = new Simulation();
 
         // Prompt for the number of vendors and customers
-        System.out.println("Enter the number of customers: ");
-        int numberOfCustomers = scanner.nextInt();
 
         System.out.println("Enter the number of vendors: ");
-        int numberOfVendors = scanner.nextInt();
+        int numberOfVendors = InputValidator.isPositive(scanner, "number of vendors");
+
+        System.out.println("Enter the number of customers: ");
+        int numberOfCustomers = InputValidator.isPositive(scanner, "number of customers");
 
         // Start the simulation
         simulation.startSimulation(numberOfVendors, numberOfCustomers, ticketPool, config);

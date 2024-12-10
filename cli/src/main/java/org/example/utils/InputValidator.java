@@ -1,5 +1,6 @@
-package org.example;
+package org.example.utils;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class InputValidator {
@@ -31,18 +32,17 @@ public class InputValidator {
      * Prompts the user and validates if the provided number is within the allowed range.
      *
      * @param scanner The Scanner object for user input.
-     * @param min The minimum allowable value.
-     * @param max The maximum allowable value.
+     * @param range The minimum allowable value.
      * @param parameterName The name of the parameter being validated (for error messages).
      * @return A valid integer within the specified range.
      */
-    public static int isWithinRange(Scanner scanner, int min, int max, String parameterName) {
+    public static int isWithinRange(Scanner scanner, List<Integer> range, String parameterName) {
         int value;
         while (true) {
             try {
                 value = scanner.nextInt(); // Read input
-                if (value <= min || value >= max) {
-                    throw new IllegalArgumentException(parameterName + " must be between " + min + " and " + max + ".");
+                if (!range.contains(value)) {
+                    throw new IllegalArgumentException(parameterName + " must be between in range (" + range.toString() + ").");
                 }
                 return value; // Valid input, exit loop
             } catch (IllegalArgumentException e) {

@@ -22,8 +22,6 @@ public class Vendor implements Runnable {
 
         while (running && addedTickets < totalTickets) {
             if (ticketPool.addTickets(new Ticket("event1202", vendorId, ""))) {
-//                Utils.log("Vendor " + vendorId + " added a ticket.");
-//                Utils.log("Ticket added to the pool. Total tickets: " + ticketPool.getTicketCount(), Utils.CYAN, "TicketPool");
                 addedTickets++;
             }
 
