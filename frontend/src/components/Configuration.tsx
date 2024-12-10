@@ -18,7 +18,7 @@ const Configuration: React.FC = () => {
     }
 
     return (
-        <div className="w-1/2 p-10 bg-white shadow-lg h-fit">
+        <div className="w-1/2 p-10 bg-[#EEEEEE] shadow-lg h-fit">
             <div>
                 <p className="text-lg">Configuration Form</p>
                 <p className="text-sm">Adjust configuration parameters here: </p>
