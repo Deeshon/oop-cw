@@ -24,4 +24,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return configurationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Config not found"));
     }
+
+    @Override
+    public ConfigurationEntity getLastEntry() {
+        return configurationRepository.findTopByOrderByIdDesc();
+    }
 }

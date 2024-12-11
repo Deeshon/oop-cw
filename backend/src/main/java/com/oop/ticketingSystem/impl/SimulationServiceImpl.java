@@ -29,21 +29,31 @@ public class SimulationServiceImpl implements SimulationService {
     public void startSimulation() {
         TicketPool ticketPool = new TicketPool(100);
 
-        ConfigurationEntity savedConfig = configurationService.getById(1);
+        ConfigurationEntity savedConfig = configurationService.getLastEntry();
         Utils.log(savedConfig.toString(), Utils.GREEN);
 
         config = new Configuration(savedConfig.getTotalTickets(), savedConfig.getMaxTicketCapacity(), savedConfig.getTicketReleaseRate(), savedConfig.getCustomerRetrievalRate());
 
         // start the simulation
         simulation.startSimulation(savedConfig.getNumberOfVendors(), savedConfig.getNumberOfCustomers(), ticketPool, config);
-
-        System.out.println("---------------------------------------------" + simulation.getVendors());
     }
 
     @Override
     public void stopSimulation() {
         // stop the simulation
         simulation.stopSimulation();
+    }
+
+    @Override
+    public void restartSimulation() {
+        TicketPool ticketPool = new TicketPool(100);
+
+        ConfigurationEntity savedConfig = configurationService.getById(2);
+        Utils.log(savedConfig.toString(), Utils.GREEN);
+
+        config = new Configuration(savedConfig.getTotalTickets(), savedConfig.getMaxTicketCapacity(), savedConfig.getTicketReleaseRate(), savedConfig.getCustomerRetrievalRate());
+
+        simulation.restartSimulation(savedConfig.getNumberOfVendors(), savedConfig.getNumberOfCustomers(), ticketPool, config);
     }
 
     @Override

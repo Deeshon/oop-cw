@@ -22,4 +22,9 @@ public class TicketSaleServiceImpl implements TicketSaleService {
     public List<TicketSale> getAllTicketSales() {
         return ticketSaleRepository.findAll();
     }
+
+    @Override
+    public void clearTicketSales() {
+        ticketSaleRepository.deleteAll();
+    }
 }

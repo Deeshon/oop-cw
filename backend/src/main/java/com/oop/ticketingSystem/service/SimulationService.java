@@ -8,6 +8,8 @@ public interface SimulationService {
 
     void stopSimulation();
 
+    void restartSimulation();
+
     List<String> getVendors();
 
     void addVendor();

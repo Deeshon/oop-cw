@@ -9,4 +9,6 @@ public interface TicketSaleService {
     TicketSale saveTicketSale(TicketSale ticketSale);
 
     List<TicketSale> getAllTicketSales();
+
+    void clearTicketSales();
 }

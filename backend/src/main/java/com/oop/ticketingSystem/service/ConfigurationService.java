@@ -8,5 +8,7 @@ public interface ConfigurationService {
 
     ConfigurationEntity getById(int id);
 
+    ConfigurationEntity getLastEntry();
+
 
 }

@@ -32,6 +32,14 @@ public class SimulationController {
         return "Simulation stopped";
     }
 
+    // api for restarting the simulation
+    // http://localhost:8080/api/simulation/restart
+    @GetMapping("/restart")
+    public String restartSimulation() {
+        simulationService.restartSimulation();
+        return "Simulation restarted";
+    }
+
     @GetMapping("/vendor/all")
     public ResponseEntity<List<String>> getVendors() {
         List<String> vendors = simulationService.getVendors();

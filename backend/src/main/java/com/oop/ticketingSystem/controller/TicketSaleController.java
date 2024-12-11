@@ -28,4 +28,10 @@ public class TicketSaleController {
         List<TicketSale> saleList = ticketSaleService.getAllTicketSales();
         return new ResponseEntity<>(saleList, HttpStatus.OK);
     }
+
+    @GetMapping("/clear")
+    public String clearSales() {
+        ticketSaleService.clearTicketSales();
+        return "Sales data cleared";
+    }
 }
