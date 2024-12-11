@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="cli" />
+        <module name="ticketingSystem" />
         <module name="ticketSystem" />
       </profile>
     </annotationProcessing>
@@ -15,6 +16,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="cli" options="-parameters" />
       <module name="ticketSystem" options="-parameters" />
+      <module name="ticketingSystem" options="-parameters" />
     </option>
   </component>
 </project>

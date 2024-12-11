@@ -3,6 +3,10 @@ package org.example;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.utils.Utils;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,9 +103,29 @@ public class Simulation {
             Utils.log("Simulation interrupted: " + e.getMessage(), Utils.RED);
         }
 
+        vendors.clear();
+        vendorThreads.clear();
+        customers.clear();
+        customerThreads.clear();
+
+        clearTicketSales();
+
         this.status = false;
         Utils.log("Simulation stopped.");
     }
+
+    public synchronized void restartSimulation(int numberOfVendors, int numberOfCustomers, TicketPool ticketPool, Configuration config) {
+        Utils.log("Restarting simulation...", Utils.YELLOW);
+
+        // Stop the current simulation to clear existing threads and data
+        stopSimulation();
+
+        // Start a new simulation with the provided parameters
+        startSimulation(numberOfVendors, numberOfCustomers, ticketPool, config);
+
+        Utils.log("Simulation restarted successfully.", Utils.GREEN);
+    }
+
 
     public synchronized void  addVendor(Configuration config) {
         Vendor vendor = new Vendor(ticketPool, config.getTicketReleaseRate(), config.getTotalTickets());
@@ -163,6 +187,27 @@ public class Simulation {
             customerIds.add(customer.getCustomerId());
         }
         return customerIds;
+    }
+
+    public void clearTicketSales() {
+        new Thread(() -> {
+            try {
+                HttpClient httpClient = HttpClient.newHttpClient();
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create("http://localhost:8080/api/sales/clear"))
+                        .header("Content-Type", "application/json")
+                        .GET()
+                        .build();
+
+                httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                        .exceptionally(error -> {
+                            return null;
+                        });
+            } catch (Exception e) {
+                Utils.log("Error clearing sales: " + e.getMessage(), Utils.RED);
+            }
+        }).start();
     }
 
     public boolean isStatus() {

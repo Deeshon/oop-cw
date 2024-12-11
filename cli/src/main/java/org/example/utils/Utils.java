@@ -40,7 +40,6 @@ public class Utils {
         LocalTime time = LocalTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss:SSS");
         String timestamp = time.format(formatter);
-        String threadName = Thread.currentThread().getName();
 
         String message = "[" + timestamp + "] " + action;
 
