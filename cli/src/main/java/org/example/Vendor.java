@@ -9,7 +9,7 @@ public class Vendor implements Runnable {
     private final int totalTickets;
     private boolean running = true;
 
-    public Vendor(String vendorName, TicketPool ticketPool, int releaseRate, int totalTickets) {
+    public Vendor(TicketPool ticketPool, int releaseRate, int totalTickets) {
         this.vendorId = "VEN-" + Utils.generateId();
         this.ticketPool = ticketPool;
         this.releaseRate = releaseRate;
@@ -21,7 +21,7 @@ public class Vendor implements Runnable {
         int addedTickets = 0;
 
         while (running && addedTickets < totalTickets) {
-            if (ticketPool.addTickets(new Ticket("event1202", vendorId, ""))) {
+            if (ticketPool.addTickets(new Ticket( vendorId, ""))) {
                 addedTickets++;
             }
 
@@ -32,9 +32,25 @@ public class Vendor implements Runnable {
                 Thread.currentThread().interrupt();
             }
         }
+
+        // Log message when the vendor finishes selling tickets
+        if (addedTickets >= totalTickets) {
+            Utils.log(vendorId + " has finished selling all tickets.");
+        }
+
+        // Stop the thread after finishing
+        running = false;
+    }
+
+    public String getVendorId() {
+        return vendorId;
     }
 
     public void stop() {
         running = false;
+    }
+
+    public boolean isRunning() {
+        return running;
     }
 }

@@ -1,45 +1,38 @@
 import { useState } from 'react';
-import axios from 'axios';
-import { notification } from 'antd';
 import { SalesData } from '../types';
+import useCallApi from './useCallApi';
+import { useAppContext } from '../AppContext';
 
 const useSimulation = () => {
-    const [salesData, setSalesData] = useState<SalesData[]>(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [salesData, setSalesData] = useState<SalesData[]>([]);
 
-    const handleApiCall = async (url, successMessage) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await axios.get(url);
-            notification.success({ message: successMessage });
-            return response.data;
-        } catch (error) {
-            setError(error);
-            notification.error({ message: `Error: ${error.message}` });
-            throw error; // Rethrow to let caller handle if needed
-        } finally {
-            setLoading(false);
-        }
-    };
+    const {error, handleApiCall, loading} = useCallApi();
+    const {setSimulation} = useAppContext();
+
 
     const startSimulation = async () => {
+        setSimulation(true)
         await handleApiCall(
+            'GET',
             'http://localhost:8080/api/simulation/start',
-            'Simulation started successfully!'
+            'Simulation started successfully!',
+            'Error occured. Failed to start simulation'
         );
     };
 
     const stopSimulation = async () => {
+        setSimulation(false)
         await handleApiCall(
+            'GET',
             'http://localhost:8080/api/simulation/stop',
-            'Simulation stopped successfully!'
+            'Simulation stopped successfully!',
+            'Error occured. Failed to stop simulation'
         );
     };
 
     const getSalesData = async () => {
         const data: SalesData[] = await handleApiCall(
+            'GET',
             'http://localhost:8080/api/sales',
             'Sales data fetched successfully!'
         );

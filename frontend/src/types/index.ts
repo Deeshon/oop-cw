@@ -3,6 +3,7 @@ export type SalesData = {
     vendorId: string;
     customerId: string;
     ticketId: string;
+    ticketsAvailable: number;
     timestamp: string;
   };
 
@@ -11,3 +12,5 @@ export type FieldType = {
     password?: string;
     remember?: string;
   };
+
+export type ApiMethod = "GET" | "POST" | "UPDATE"

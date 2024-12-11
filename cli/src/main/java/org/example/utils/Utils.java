@@ -1,6 +1,11 @@
 package org.example.utils;
 
 import java.security.SecureRandom;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Utils {
 
@@ -11,6 +16,8 @@ public class Utils {
     public static final String YELLOW = "\u001B[33m";
     public static final String BLUE = "\u001B[34m";
     public static final String CYAN = "\u001B[36m";
+
+    private static final ConcurrentLinkedQueue<String> logs = new ConcurrentLinkedQueue<>();
 
     /**
      * Generates a random string containing uppercase letters (A-Z) and digits (0-9).
@@ -30,20 +37,38 @@ public class Utils {
     }
 
     public static synchronized void log(String action, String color) {
-        String timestamp = java.time.LocalTime.now().toString();
+        LocalTime time = LocalTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss:SSS");
+        String timestamp = time.format(formatter);
         String threadName = Thread.currentThread().getName();
-        // Print the log with color
-        System.out.println(color + "[" + timestamp + "] [" + threadName + "] " + action + RESET);
-    }
 
-    public static synchronized void log(String action, String color, String user) {
-        String timestamp = java.time.LocalTime.now().toString();
-        // Print the log with color
-        System.out.println(color + "[" + timestamp + "] [" + user + "] " + action + RESET);
+        String message = "[" + timestamp + "] " + action;
+
+        // save the logs in in-memory storage
+        logs.add(message);
+
+        // Print the log to the cli
+        System.out.println(color + message);
     }
 
     // Overloaded method for default color (no specific color given)
     public static synchronized void log(String action) {
         log(action, RESET);
+    }
+
+    /**
+     * Retrieves all stored logs.
+     *
+     * @return List of log messages.
+     */
+    public static synchronized List<String> getLogs() {
+        return new ArrayList<>(logs);
+    }
+
+    /**
+     * Clears the in-memory log storage.
+     */
+    public static void clearLogs() {
+        logs.clear();
     }
 }

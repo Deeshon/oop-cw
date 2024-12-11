@@ -17,6 +17,16 @@ public class TicketSale {
 
     private String ticketId;
 
+    private Integer ticketsAvailable;
+
+    public Integer getTicketsAvailable() {
+        return ticketsAvailable;
+    }
+
+    public void setTicketsAvailable(Integer ticketsAvailable) {
+        this.ticketsAvailable = ticketsAvailable;
+    }
+
     private LocalDateTime timestamp;
 
     // Getters and setters

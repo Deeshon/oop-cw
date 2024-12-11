@@ -38,8 +38,9 @@ public class TicketPool {
             Utils.log("Vendor "
                     + ticket.getVendorId()
                     + " added a ticket."
-                    + "\nTotal tickets available: "
-                    + queue.size(), Utils.CYAN);
+                    , Utils.CYAN);
+            Utils.log("Total tickets available: "
+                    + queue.size());
             notEmpty.signalAll(); // Notify customers that tickets are available
             return true;
         } catch (InterruptedException e) {
@@ -60,17 +61,20 @@ public class TicketPool {
             Ticket ticket = queue.poll();
             if (ticket != null) {
                 ticket.setCustomerId(customerId);
-                Utils.log(customerId
+                Utils.log("Customer " + customerId
                         + " purchased ticket "
                         + ticket.getTicketId()
-                        + ". \nTotal tickets available: "
-                        + queue.size(), Utils.YELLOW);
+                        , Utils.YELLOW);
+                Utils.log("Total tickets available: " + queue.size());
+
+
 
                 // Notify the backend of the sale
                 notifyBackend(new TicketSale(
                         ticket.getVendorId(),
                         customerId,
                         ticket.getTicketId(),
+                        queue.size(),
                         java.time.LocalDateTime.now()
                 ));
             }
@@ -88,14 +92,13 @@ public class TicketPool {
                 HttpClient httpClient = HttpClient.newHttpClient();
 
                 String jsonBody = String.format(
-                        "{\"vendorId\":\"%s\",\"customerId\":\"%s\",\"ticketId\":\"%s\",\"timestamp\":\"%s\"}",
+                        "{\"vendorId\":\"%s\",\"customerId\":\"%s\",\"ticketId\":\"%s\",\"ticketsAvailable\":\"%d\",\"timestamp\":\"%s\"}",
                         sale.getVendorId(),
                         sale.getCustomerId(),
                         sale.getTicketId(),
+                        sale.getTicketsAvailable(),
                         sale.getTimestamp()
                 );
-
-                Utils.log(jsonBody, Utils.BLUE);
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create("http://localhost:8080/api/sales"))
@@ -104,9 +107,7 @@ public class TicketPool {
                         .build();
 
                 httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                        .thenAccept(response -> Utils.log("Backend response: " + response.body(), Utils.GREEN))
                         .exceptionally(error -> {
-                            Utils.log("Failed to notify backend: " + error.getMessage(), Utils.RED);
                             return null;
                         });
             } catch (Exception e) {

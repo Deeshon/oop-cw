@@ -1,18 +1,17 @@
 import { Button, Form, Input } from "antd";
-import axios from "axios";
 import React from "react";
+import useCallApi from "../hooks/useCallApi";
 
 const Configuration: React.FC = () => {
 
     const [form] = Form.useForm();
+    const {handleApiCall} = useCallApi();
 
     const handleSubmit = () => {
         form.validateFields()
         .then(values => {
             console.log("form values: ", values)
-            axios.post("http://localhost:8080/api/config", values)
-                .then(response => console.log(response))
-                .catch(error => console.error(error))
+            handleApiCall('POST', 'http://localhost:8080/api/config', 'Configuration set successfully', "Failed to set configuration", values)
         })
         .catch(error => console.error("Validation failed: ", error))
     }

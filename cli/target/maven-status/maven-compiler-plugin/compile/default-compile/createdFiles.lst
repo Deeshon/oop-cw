@@ -3,7 +3,8 @@ org\example\TicketPool.class
 org\example\Customer.class
 org\example\Main.class
 org\example\utils\Utils.class
+org\example\utils\InputValidator.class
 org\example\Ticket.class
-org\example\InputValidator.class
+org\example\TicketSale.class
 org\example\Configuration.class
 org\example\Vendor.class

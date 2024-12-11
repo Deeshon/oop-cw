@@ -4,15 +4,13 @@ import org.example.utils.Utils;
 
 public class Customer implements Runnable {
     private final TicketPool ticketPool;
-    private final String name;
     private final String customerId;
     private final int retrievalRate;
     private boolean running = true;
 
-    public Customer(TicketPool ticketPool, String name, int retrievalRate) {
+    public Customer(TicketPool ticketPool, int retrievalRate) {
         this.customerId = "CUST-"+ Utils.generateId();
         this.ticketPool = ticketPool;
-        this.name = name;
         this.retrievalRate = retrievalRate;
     }
 
@@ -22,14 +20,18 @@ public class Customer implements Runnable {
             try {
                 Ticket ticket = ticketPool.removeTicket(customerId);
                 if (ticket == null) {
-                    Utils.log(name + " found no tickets available.");
+                    Utils.log(customerId + " found no tickets available.");
                 }
                 Thread.sleep(retrievalRate * 1000L); // Simulate retrieval rate
             } catch (InterruptedException e) {
-                Utils.log(name + " interrupted.");
+                Utils.log(customerId + " interrupted.");
                 Thread.currentThread().interrupt();
             }
         }
+    }
+
+    public String getCustomerId() {
+        return customerId;
     }
 
     public void stop() {

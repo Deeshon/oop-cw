@@ -1,5 +1,6 @@
 package org.example;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.utils.Utils;
 
 import java.util.ArrayList;
@@ -11,8 +12,13 @@ public class Simulation {
     private final List<Thread> vendorThreads = new ArrayList<>();
     private final List<Customer> customers = new ArrayList<>();
     private final List<Thread> customerThreads = new ArrayList<>();
+    private boolean status = false;
 
-    public synchronized void startSimulation(int numberOfVendors, int numberOfCustomers, TicketPool ticketPool, Configuration config ) {
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+
+    public synchronized void startSimulation(int numberOfVendors, int numberOfCustomers, TicketPool ticketPool, Configuration config) {
+
         // Initialize the ticket pool
         this.ticketPool = ticketPool;
 
@@ -24,16 +30,16 @@ public class Simulation {
 
         // Create vendor threads
         for (int i = 1; i <= numberOfVendors; i++) {
-            Vendor vendor = new Vendor("Vendor" + i, ticketPool, config.getTicketReleaseRate(), config.getTotalTickets());
+            Vendor vendor = new Vendor(ticketPool, config.getTicketReleaseRate(), config.getTotalTickets());
             vendors.add(vendor);
-            vendorThreads.add(new Thread(vendor, "Vendor" + i));
+            vendorThreads.add(new Thread(vendor, vendor.getVendorId()));
         }
 
         // Create customer threads
         for (int i = 1; i <= numberOfCustomers; i++) {
-            Customer customer = new Customer(ticketPool, "Customer" + i, config.getCustomerRetrievalRate());
+            Customer customer = new Customer(ticketPool, config.getCustomerRetrievalRate());
             customers.add(customer);
-            customerThreads.add(new Thread(customer, "Customer" + i));
+            customerThreads.add(new Thread(customer, customer.getCustomerId()));
         }
 
         System.out.println("Starting simulation...");
@@ -66,6 +72,8 @@ public class Simulation {
             customerThread.start();
             Utils.log("New customer [" + customerThread.getName() + "] entered the system", Utils.GREEN);
         }
+
+        this.status = true;
     }
 
     public synchronized void stopSimulation() {
@@ -91,6 +99,73 @@ public class Simulation {
             Utils.log("Simulation interrupted: " + e.getMessage(), Utils.RED);
         }
 
+        this.status = false;
         Utils.log("Simulation stopped.");
+    }
+
+    public synchronized void  addVendor(Configuration config) {
+        Vendor vendor = new Vendor(ticketPool, config.getTicketReleaseRate(), config.getTotalTickets());
+        vendors.add(vendor);
+        Thread vendorThread = new Thread(vendor, vendor.getVendorId());
+        vendorThreads.add(vendorThread);
+        vendorThread.start();
+        Utils.log("New vendor [" + vendor.getVendorId() + "] added to the simulation.", Utils.GREEN);
+    }
+
+    public synchronized void discontinueVendor(String vendorId) {
+        Vendor vendorToRemove = getVendorById(vendorId);
+        if (vendorToRemove != null) {
+            vendorToRemove.stop();
+            vendors.remove(vendorToRemove);
+            vendorThreads.removeIf(thread -> thread.getName().equals(vendorId));
+            Utils.log("Vendor [" + vendorId + "] removed from the simulation.", Utils.RED);
+        }
+    }
+
+    public synchronized void addCustomer(Configuration config) {
+        Customer customer = new Customer(ticketPool, config.getCustomerRetrievalRate());
+        customers.add(customer);
+        Thread customerThread = new Thread(customer, customer.getCustomerId());
+        customerThreads.add(customerThread);
+        customerThread.start();
+        Utils.log("New customer [" + customer.getCustomerId() + "] added to the simulation.", Utils.GREEN);
+    }
+
+    public synchronized void removeCustomer(String customerId) {
+        Customer customerToRemove = getCustomerById(customerId);
+        if (customerToRemove != null) {
+            customerToRemove.stop();
+            customers.remove(customerToRemove);
+            customerThreads.removeIf(thread -> thread.getName().equals(customerId));
+            Utils.log("Customer [" + customerId + "] removed from the simulation.", Utils.RED);
+        }
+    }
+
+    public Vendor getVendorById(String vendorId) {
+        return vendors.stream().filter(v -> v.getVendorId().equals(vendorId)).findFirst().orElse(null);
+    }
+
+    public Customer getCustomerById(String customerId) {
+        return customers.stream().filter(c -> c.getCustomerId().equals(customerId)).findFirst().orElse(null);
+    }
+
+    public List<String> getVendors() {
+        List<String> vendorIds = new ArrayList<>();
+        for (Vendor vendor : vendors) {
+            vendorIds.add(vendor.getVendorId());
+        }
+        return vendorIds;
+    }
+
+    public List<String> getCustomers() {
+        List<String> customerIds = new ArrayList<>();
+        for (Customer customer : customers) {
+            customerIds.add(customer.getCustomerId());
+        }
+        return customerIds;
+    }
+
+    public boolean isStatus() {
+        return status;
     }
 }

@@ -7,4 +7,6 @@ public interface ConfigurationService {
     ConfigurationEntity saveConfiguration(ConfigurationEntity configurationEntity);
 
     ConfigurationEntity getById(int id);
+
+
 }
