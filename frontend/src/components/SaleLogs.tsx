@@ -1,5 +1,5 @@
 import { Button, notification } from "antd";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { SalesData } from "../types";
 import { useAppContext } from "../AppContext";
 import useCallApi from "../hooks/useCallApi";
@@ -8,7 +8,6 @@ const SaleLogs: React.FC = () => {
   const [saleLogs, setSaleLogs] = useState<SalesData[] | null>(null);
   const [open, setOpen] = useState(true);
 
-  const scrollableDivRef = useRef<HTMLDivElement | null>(null);
   const { handleApiCall } = useCallApi();
   const { isSimulation } = useAppContext();
 
@@ -23,13 +22,6 @@ const SaleLogs: React.FC = () => {
       console.error("Error fetching sale logs:", error);
     }
   };
-
-  // Scroll to the bottom when saleLogs updates
-  useEffect(() => {
-    if (scrollableDivRef.current) {
-      scrollableDivRef.current.scrollTop = scrollableDivRef.current.scrollHeight;
-    }
-  }, [saleLogs]);
 
   useEffect(() => {
     let interval = null;
@@ -49,7 +41,9 @@ const SaleLogs: React.FC = () => {
   }, [isSimulation]);
 
   useEffect(() => {
-    fetchSaleLogs()
+    if (isSimulation) {
+      fetchSaleLogs()
+    }
   }, [])
 
   const formatSaleLog = (log: SalesData) => {
@@ -76,7 +70,6 @@ const SaleLogs: React.FC = () => {
         </div>
       </div>
       <div
-        ref={scrollableDivRef}
         className={
           open ? "p-4 bg-900 max-h-[400px] overflow-y-auto" : "hidden"
         }

@@ -38,9 +38,9 @@ function calculateSalesData(data: SalesData[]) {
 
   return {
     vendorSales,
-    vendorCount,
     totalSales,
     ticketsAvailable,
+    vendorCount,
     uniqueCustomers,
   };
 }
@@ -49,6 +49,8 @@ const AnalysisDisplay: React.FC = () => {
   const [open, setOpen] = useState(true);
   const [salesData, setSalesData] = useState<SalesData[]>([]);
   const [loading, setLoading] = useState(false);
+  const [vendors, setVendors] = useState<string[]>([]);
+  const [customers, setCustomers] = useState<string[]>([]);
 
   const {isSimulation} = useAppContext();
 
@@ -68,13 +70,34 @@ const AnalysisDisplay: React.FC = () => {
       setLoading(false);
     }
   };
+  const fetchVendors = async () => {
+    const data = await handleApiCall(
+      "GET",
+      "http://localhost:8080/api/simulation/vendor/all"
+    );
+    setVendors(data);
+  };
 
+  const fetchCustomers = async () => {
+    const data = await handleApiCall(
+      "GET",
+      "http://localhost:8080/api/simulation/customers/all"
+    );
+    setCustomers(data);
+  };
+  
   // Fetch data every 2 seconds
   useEffect(() => {
     let interval = null;
     if (isSimulation) {
         fetchSaleLogs(); // Fetch immediately on mount
-        interval = setInterval(fetchSaleLogs, 2000); // Fetch every 2 seconds
+        fetchVendors();
+        fetchCustomers();
+        interval = setInterval(() => {
+          fetchSaleLogs();
+          fetchVendors();
+          fetchCustomers();
+        }, 2000); // Fetch every 2 seconds
     }
     return () => {
         if (interval) {
@@ -86,19 +109,18 @@ const AnalysisDisplay: React.FC = () => {
   // Get the calculated sales data
   const {
     vendorSales,
-    vendorCount,
     totalSales,
-    uniqueCustomers,
     ticketsAvailable,
+    uniqueCustomers,
+    vendorCount
   } = calculateSalesData(salesData);
 
-  // Data for the BarChart
+// Data for the BarChart
   const vendorChartData = Object.entries(vendorSales).map(
     ([vendorId, sales]) => ({
       vendorId,
       sales,
-    })
-  );
+  }));
 
   return (
     <div className="m-10 bg-white">
@@ -136,13 +158,21 @@ const AnalysisDisplay: React.FC = () => {
               </BarChart>
             </ResponsiveContainer>
             <div className="mt-4">
-              {Object.entries(vendorSales).map(([vendorId, sales]) => (
-                <div key={vendorId} className="flex justify-between mt-2">
-                  <span className="text-xl font-medium">{`Vendor ${vendorId}:`}</span>
-                  <span className="text-xl">{sales}</span>
-                </div>
-              ))}
-            </div>
+  {Object.entries(vendorSales).map(([vendorId, sales]) => {
+    const isDiscontinued = !vendors.includes(vendorId);
+    return (
+      <div key={vendorId} className="flex justify-between mt-2">
+        <span
+          className={`text-xl font-medium ${isDiscontinued ? "text-red-500" : ""}`}
+        >
+          {`Vendor ${vendorId}: ${isDiscontinued ? "(DISCONTINUED)" : ""}`}
+        </span>
+        <span className="text-xl">{sales}</span>
+      </div>
+    );
+  })}
+</div>
+
           </div>
 
           {/* General Stats */}
@@ -181,12 +211,28 @@ const AnalysisDisplay: React.FC = () => {
                 <span className="text-xl">{ticketsAvailable}</span>
               </div>
               <div className="flex justify-between mt-10">
-                <span className="text-xl font-medium">Unique Customers:</span>
+                <span className="text-xl font-medium">Total Customers:</span>
                 <span className="text-xl">{uniqueCustomers}</span>
               </div>
               <div className="flex justify-between mt-2">
+                <span className="text-xl font-medium">Active Customers:</span>
+                <span className="text-xl">{customers.length}</span>
+              </div>
+              <div className="flex justify-between mt-2">
+                <span className="text-xl font-medium">Discontinued Customers:</span>
+                <span className="text-xl">{uniqueCustomers - customers.length}</span>
+              </div>
+              <div className="flex justify-between mt-10">
                 <span className="text-xl font-medium">Total Vendors:</span>
                 <span className="text-xl">{vendorCount}</span>
+              </div>
+              <div className="flex justify-between mt-2">
+                <span className="text-xl font-medium">Active Vendors:</span>
+                <span className="text-xl">{vendors.length}</span>
+              </div>
+              <div className="flex justify-between mt-2">
+                <span className="text-xl font-medium">Discontinued Vendors:</span>
+                <span className="text-xl">{vendorCount - vendors.length}</span>
               </div>
             </div>
           </div>

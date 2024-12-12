@@ -38,7 +38,7 @@ const ControlPanel: React.FC = () => {
   const removeVendor = async (vendorId: string) => {
     await handleApiCall(
       "POST",
-      "http://localhost:8080/api/simulation/vendor/discontinue",
+      "http://localhost:8080/api/simulation/vendor/remove",
       `Vendor ${vendorId} removed successfully!`,
       `Failed to remove vendor ${vendorId}`,
       {vendorId: vendorId}
@@ -105,7 +105,13 @@ const ControlPanel: React.FC = () => {
               <Button
                 className="w-64 h-12 mr-4"
                 type="primary"
-                onClick={startSimulation}
+                onClick={() => {
+                  startSimulation()
+                  setInterval(() => {
+                    fetchVendors()
+                    fetchCustomers()
+                  }, 2000)
+                }}
               >
                 Start
               </Button>

@@ -1,12 +1,11 @@
 import { Button, notification } from "antd";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import useCallApi from "../hooks/useCallApi";
 import { useAppContext } from "../AppContext";
 
 const SystemLogs: React.FC = () => {
     const [systemLogs, setSystemLogs] = useState<string[]>([]);
     const [open, setOpen] = useState(true);
-    const scrollableDivRef = useRef<HTMLDivElement | null>(null);
     const { handleApiCall } = useCallApi();
     const { isSimulation } = useAppContext();
 
@@ -36,13 +35,6 @@ const SystemLogs: React.FC = () => {
             console.error("Error fetching system logs: ", error);
         }
     };
-
-    useEffect(() => {
-        // Scroll to the bottom when systemLogs updates
-        if (scrollableDivRef.current) {
-            scrollableDivRef.current.scrollTop = scrollableDivRef.current.scrollHeight;
-        }
-    }, [systemLogs]);
 
     useEffect(() => {
         let interval = null;
@@ -82,7 +74,6 @@ const SystemLogs: React.FC = () => {
                 </div>
             </div>
             <div
-                ref={scrollableDivRef}
                 className={open ? "p-8 bg-900 max-h-[400px] overflow-y-auto" : "hidden"}
             >
                 {systemLogs?.map((log, index) => {
